@@ -345,7 +345,7 @@ Auth: JWT
 Deployment: Docker
 
 Environment (contoh .env)
-
+```text
 PORT=3000
 DB_HOST=localhost
 DB_PORT=5432
@@ -353,6 +353,4 @@ DB_USER=casaos
 DB_PASS=casaos
 DB_NAME=go_accounting
 JWT_SECRET=temporarykey
-
-
-
+```
