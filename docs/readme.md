@@ -49,6 +49,7 @@ Menyediakan solusi akuntansi sederhana, cepat, dan andal.
 ## 4. 🏛️ Arsitektur Aplikasi
 
 ### Struktur Direktori (Clean Architecture)
+```text
 Go-Accounting/
 │
 ├── cmd/    ()               # Entry point (main.go)
@@ -89,7 +90,7 @@ Go-Accounting/
 │
 ├── go.mod
 └── README.md
-
+```
 
 ---------------
 
