@@ -1,0 +1,108 @@
+# github-project.yml
+
+name: Go Accounting Project
+description: Perencanaan dan implementasi aplikasi akuntansi dengan Go + Fiber + GORM
+labels:
+  - backend
+  - auth
+  - journal
+  - account
+  - api
+  - testing
+  - docker
+  - architecture
+
+iterations:
+  - name: Fase 1 - Setup Infrastruktur
+    start_date: 2025-06-12
+    duration: 1w
+  - name: Fase 2 - Autentikasi & User
+    start_date: 2025-06-19
+    duration: 1w
+  - name: Fase 3 - Modul Account
+    start_date: 2025-06-26
+    duration: 1w
+  - name: Fase 4 - Modul Jurnal
+    start_date: 2025-07-03
+    duration: 1w
+
+items:
+  - title: Inisialisasi proyek Go + Fiber
+    labels: [backend, architecture]
+    iteration: Fase 1 - Setup Infrastruktur
+
+  - title: Setup Docker & PostgreSQL
+    labels: [docker, backend]
+    iteration: Fase 1 - Setup Infrastruktur
+
+  - title: Setup konfigurasi environment (.env, config.go)
+    labels: [backend]
+    iteration: Fase 1 - Setup Infrastruktur
+
+  - title: Setup clean architecture (struktur direktori)
+    labels: [architecture, backend]
+    iteration: Fase 1 - Setup Infrastruktur
+
+  - title: Buat skema database awal (init_schema.sql)
+    labels: [backend]
+    iteration: Fase 1 - Setup Infrastruktur
+
+  - title: Implementasi JWT login
+    labels: [auth, api]
+    iteration: Fase 2 - Autentikasi & User
+
+  - title: Endpoint register & list users
+    labels: [auth, api]
+    iteration: Fase 2 - Autentikasi & User
+
+  - title: Setup role & middleware (admin/staff)
+    labels: [auth]
+    iteration: Fase 2 - Autentikasi & User
+
+  - title: CRUD akun (Chart of Accounts)
+    labels: [account, api]
+    iteration: Fase 3 - Modul Account
+
+  - title: Validasi akun non-posting & jenis akun
+    labels: [account]
+    iteration: Fase 3 - Modul Account
+
+  - title: Buat jurnal dan validasi debit-kredit
+    labels: [journal, api]
+    iteration: Fase 4 - Modul Jurnal
+
+  - title: Endpoint jurnal: create, get all, get by ID
+    labels: [journal, api]
+    iteration: Fase 4 - Modul Jurnal
+
+  - title: Validasi periode tertutup (opsional)
+    labels: [journal]
+    iteration: Fase 4 - Modul Jurnal
+
+  - title: Endpoint laporan keuangan (neraca, laba rugi, arus kas)
+    labels: [api, backend]
+    iteration: Fase 5 - Laporan & Fitur Opsional
+
+  - title: Tambahkan company_id untuk multi-perusahaan
+    labels: [backend]
+    iteration: Fase 5 - Laporan & Fitur Opsional
+
+  - title: Implementasi tutup buku bulanan (lock period)
+    labels: [backend, journal]
+    iteration: Fase 5 - Laporan & Fitur Opsional
+
+  - title: Script seed data akun dasar (kas, modal, beban, pendapatan)
+    labels: [backend, account]
+    iteration: Fase 5 - Laporan & Fitur Opsional
+
+  - title: Unit testing usecase & handler
+    labels: [testing, backend]
+    iteration: Fase 6 - Pengujian & CI/CD
+
+  - title: Buat Dockerfile dan docker-compose.yml
+    labels: [docker]
+    iteration: Fase 6 - Pengujian & CI/CD
+
+  - title: Setup GitHub Actions untuk CI
+    labels: [testing]
+    iteration: Fase 6 - Pengujian & CI/CD
