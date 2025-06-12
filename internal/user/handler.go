@@ -2,8 +2,10 @@ package user
 
 import (
 	"context"
+	"go_accounting/internal/shared/validation"
 	"net/http"
 
+	"github.com/go-playground/validator"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -19,11 +21,25 @@ func NewUserHandler(router fiber.Router, usecase UserUsecase) {
 	router.Get("/", handler.GetAll)
 }
 
+var validate = validator.New()
+
 func (h *UserHandler) Register(ctx *fiber.Ctx) error {
 	var input RegisterInput
 	if err := ctx.BodyParser(&input); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid input",
+			"error": "Invalid JSON input",
+		})
+	}
+	//validate input
+	if err := validate.Struct(input); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	//compare password
+	if err := validation.ComparePassword(input.Password, input.ConfirmPassword); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
 		})
 	}
 	user, err := h.usecase.Register(context.Background(), input)
@@ -39,7 +55,12 @@ func (h *UserHandler) Login(ctx *fiber.Ctx) error {
 	var input LoginInput
 	if err := ctx.BodyParser(&input); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid input",
+			"error": "Invalid JSON input",
+		})
+	}
+	if err := validate.Struct(input); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
 		})
 	}
 	authResponse, err := h.usecase.Login(context.Background(), input)

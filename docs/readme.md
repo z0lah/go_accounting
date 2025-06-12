@@ -110,7 +110,7 @@ http://localhost:3000/api/v1
 
 ### 🔑 Login
 
-**POST** `/auth/login`
+**POST** `/user/login`
 
 #### Request
 ```json
@@ -122,13 +122,18 @@ http://localhost:3000/api/v1
 #### Response
 ```json
 {
-  "token": "jwt-token"
+  "token": "jwt-token",
+  "user": {
+    "id": "uuid",
+    "name": "john doe",
+    "role": "staff"
+  }
 }
 ```
 
 ### 👤 Users
 ➕ Create User
-**POST** `/users`
+**POST** `/user/regiser`
 
 #### Request
 ```json
@@ -136,8 +141,8 @@ http://localhost:3000/api/v1
   "name": "John Doe",
   "email": "john@example.com",
   "password": "secret123",
+  "confirm_password": "secret123",
   "phone": "08123456789",
-  "role": "admin"
 }
 ```
 #### Response
@@ -146,10 +151,9 @@ http://localhost:3000/api/v1
   "id": "uuid",
   "name": "John Doe",
   "email": "john@example.com",
-  "email": "john@example.com",
   "phone": "08123456789",
-  "role": "admin",
-  "created_at": "timestamp"
+  "role": "staff", // default role
+  "status": "not_active" // need to be activated by admin
 }
 ```
 

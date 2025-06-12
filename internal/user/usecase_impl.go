@@ -6,8 +6,6 @@ import (
 	"go_accounting/internal/shared/token"
 	"log"
 
-	// "go/token"
-
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -60,8 +58,8 @@ func (u *userUsecase) Login(ctx context.Context, input LoginInput) (*AuthRespons
 	}
 
 	return &AuthResponse{
-		// User:  ToUserResponse(user),
 		Token: tokenStr,
+		User:  ToLoginResponse(user),
 	}, nil
 }
 
