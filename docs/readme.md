@@ -158,17 +158,35 @@ http://localhost:3000/api/v1
 ```
 
 ### 📄 Get All Users
-**GET** `/users`
+**GET** `/users?page=1&limit=10`
 
 Response
 ```json
-[
-  {
-    "id": "uuid",
-    "name": "John Doe",
-    "email": "john@example.com"
-  }
-]
+{
+    "data": [
+        {
+            "id": "uid",
+            "name": "zolah",
+            "email": "zolah@mail.com",
+            "role": "admin",
+            "phone": "12345456789",
+            "status": "active"
+        },
+        {
+            "id": "uid",
+            "name": "zolah2",
+            "email": "zolah2@mail.com",
+            "role": "staff",
+            "phone": "0987654321",
+            "status": "not_active"
+        }
+    ],
+    "pagination": {
+        "page": 1,
+        "limit": 10,
+        "total": 2
+    }
+}
 ```
 
 ## 📒 Accounts

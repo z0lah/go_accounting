@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"go_accounting/internal/shared/pagination"
 	"go_accounting/internal/shared/validation"
 	"net/http"
 
@@ -73,11 +74,14 @@ func (h *UserHandler) Login(ctx *fiber.Ctx) error {
 }
 
 func (h *UserHandler) GetAll(ctx *fiber.Ctx) error {
-	users, err := h.usecase.GetAll(context.Background())
+	pq := pagination.FromQuery(ctx)
+
+	data, total, err := h.usecase.GetAll(context.Background(), pq.Page, pq.Limit)
 	if err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{
 			"error": err.Error(),
 		})
 	}
-	return ctx.Status(http.StatusOK).JSON(users)
+	resp := pagination.BuildPagedResponse(data, pq.Page, pq.Limit, total)
+	return ctx.Status(http.StatusOK).JSON(resp)
 }

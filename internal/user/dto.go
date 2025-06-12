@@ -1,6 +1,6 @@
 package user
 
-// User lengkap
+// single User lengkap
 type UserResponse struct {
 	ID     string `json:"id"`
 	Name   string `json:"name"`
@@ -12,10 +12,12 @@ type UserResponse struct {
 
 func ToUserResponse(u *User) *UserResponse {
 	return &UserResponse{
-		ID:    u.ID.String(),
-		Name:  u.Name,
-		Email: u.Email,
-		Role:  u.Role,
+		ID:     u.ID.String(),
+		Name:   u.Name,
+		Email:  u.Email,
+		Role:   u.Role,
+		Phone:  u.Phone,
+		Status: u.Status,
 	}
 }
 

@@ -63,6 +63,15 @@ func (u *userUsecase) Login(ctx context.Context, input LoginInput) (*AuthRespons
 	}, nil
 }
 
-func (u *userUsecase) GetAll(ctx context.Context) ([]User, error) {
-	return u.repo.FindAll(ctx)
+func (u *userUsecase) GetAll(ctx context.Context, page int, limit int) ([]UserResponse, int64, error) {
+	rawUser, total, err := u.repo.FindAll(ctx, page, limit)
+	if err != nil {
+		return nil, 0, err
+	}
+	users := make([]UserResponse, 0, len(rawUser))
+	for _, user := range rawUser {
+		users = append(users, *ToUserResponse(&user))
+	}
+
+	return users, total, nil
 }

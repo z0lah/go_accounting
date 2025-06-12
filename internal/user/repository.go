@@ -30,8 +30,21 @@ func (r *userRepository) FindByID(ctx context.Context, id uuid.UUID) (*User, err
 	err := r.db.WithContext(ctx).Where("id = ?", id).First(&user).Error
 	return &user, err
 }
-func (r *userRepository) FindAll(ctx context.Context) ([]User, error) {
+func (r *userRepository) FindAll(ctx context.Context, page int, limit int) ([]User, int64, error) {
 	var users []User
-	err := r.db.WithContext(ctx).Find(&users).Error
-	return users, err
+	var total int64
+	offset := (page - 1) * limit
+
+	// hitung total
+	tx := r.db.WithContext(ctx).Model(&User{})
+	if err := tx.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	//ambil data
+	if err := tx.Limit(limit).Offset(offset).Find(&users).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return users, total, nil
 }
