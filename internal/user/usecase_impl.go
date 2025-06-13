@@ -6,6 +6,7 @@ import (
 	"go_accounting/internal/shared/token"
 	"log"
 
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -74,4 +75,35 @@ func (u *userUsecase) GetAll(ctx context.Context, page int, limit int) ([]UserRe
 	}
 
 	return users, total, nil
+}
+
+func (u *userUsecase) GetNotActive(ctx context.Context) ([]UserResponse, error) {
+	users, err := u.repo.FindNotActive(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if len(users) == 0 {
+		return []UserResponse{}, nil
+	}
+	res := make([]UserResponse, 0, len(users))
+	for _, user := range users {
+		res = append(res, *ToUserResponse(&user))
+	}
+	return res, nil
+}
+
+func (u *userUsecase) UpdateRole(ctx context.Context, id string, input UpdateRoleInput) error {
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		return errors.New("invalid id")
+	}
+	return u.repo.UpdateRole(ctx, uid, string(input.Role))
+}
+
+func (u *userUsecase) UpdateStatus(ctx context.Context, id string, input UpdateStatusInput) error {
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		return errors.New("invalid id")
+	}
+	return u.repo.UpdateStatus(ctx, uid, string(input.Status))
 }

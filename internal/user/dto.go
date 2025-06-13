@@ -80,4 +80,15 @@ type UpdateInput struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
 	Role  string `json:"role"`
+	Phone string `json:"phone"`
+}
+
+// Update role
+type UpdateRoleInput struct {
+	Role Role `json:"role" validate:"required,oneof=admin staff"`
+}
+
+// Update status
+type UpdateStatusInput struct {
+	Status Status `json:"status" validate:"required,oneof=active not_active"`
 }

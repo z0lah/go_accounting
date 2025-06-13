@@ -189,6 +189,50 @@ Response
 }
 ```
 
+### 📄 Get Not_Active Users
+**GET** `/users/not-active
+
+Response
+```json
+{
+ {
+      "id": "uid",
+      "name": "zolah",
+      "email": "zolah@mail.com",
+      "role": "admin",
+      "phone": "12345456789",
+      "status": "not_active"
+  },
+  {
+      "id": "uid",
+      "name": "zolah2",
+      "email": "zolah2@mail.com",
+      "role": "staff",
+      "phone": "0987654321",
+      "status": "not_active"
+  }
+}
+```
+
+### 📄 Update User Status
+**PATCH** `/users/uid/status
+
+Request
+```json
+{
+  "status": "active"
+}
+```
+### 📄 Update User Role
+**PATCH** `/users/uid/role
+
+Request
+```json
+{
+  "role": "admin"
+}
+```
+
 ## 📒 Accounts
 ### ➕ Create Account
 **POST** `/accounts`

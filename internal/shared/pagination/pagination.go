@@ -23,9 +23,6 @@ func (p *PageQuery) Normalize() {
 	if p.Limit <= 0 {
 		p.Limit = 10
 	}
-	if p.Limit > 100 {
-		p.Limit = 100
-	}
 }
 
 // FromQuery parses query param into PageQuery

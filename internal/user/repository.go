@@ -48,3 +48,17 @@ func (r *userRepository) FindAll(ctx context.Context, page int, limit int) ([]Us
 
 	return users, total, nil
 }
+
+func (r *userRepository) FindNotActive(ctx context.Context) ([]User, error) {
+	var users []User
+	err := r.db.WithContext(ctx).Where("status = ?", StatusNotActive).Find(&users).Error
+	return users, err
+}
+
+func (r *userRepository) UpdateRole(ctx context.Context, id uuid.UUID, role string) error {
+	return r.db.WithContext(ctx).Model(&User{}).Where("id = ?", id).Update("role", role).Error
+}
+
+func (r *userRepository) UpdateStatus(ctx context.Context, id uuid.UUID, status string) error {
+	return r.db.WithContext(ctx).Model(&User{}).Where("id = ?", id).Update("status", status).Error
+}
