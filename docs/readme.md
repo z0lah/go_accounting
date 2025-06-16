@@ -195,7 +195,7 @@ Response
 Response
 ```json
 {
- {
+  {
       "id": "uid",
       "name": "zolah",
       "email": "zolah@mail.com",
