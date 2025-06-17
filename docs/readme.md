@@ -18,7 +18,7 @@ Menyediakan solusi akuntansi sederhana, cepat, dan andal.
 ## 2. ✅ Fitur Utama
 
 - [ ] Autentikasi dan otorisasi pengguna (JWT)
-- [ ] Manajemen akun (Chart of Accounts / COA)
+- [x] Manajemen akun (Chart of Accounts / COA)
 - [ ] Modul jurnal umum dan entri transaksi
 - [ ] Laporan keuangan:
   - Neraca
