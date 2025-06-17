@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"go_accounting/internal/account"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 type journalUsecase struct {
@@ -38,8 +41,12 @@ func (u *journalUsecase) Create(ctx context.Context, input CreateJournalInput) (
 	}
 
 	// maping journal dan detail
+	parsedDate, err := time.Parse("2006-01-02", input.Date)
+	if err != nil {
+		return nil, err
+	}
 	journal := &Journal{
-		Date:        input.Date,
+		Date:        parsedDate,
 		Reference:   input.Reference,
 		Description: input.Description,
 	}
@@ -68,10 +75,47 @@ func (u *journalUsecase) Create(ctx context.Context, input CreateJournalInput) (
 	return ToJournalResponse(journal, detailResponse), nil
 }
 
-func (j *journalUsecase) GetAll(ctx context.Context, page, limit int) ([]JournalResponse, int64, error) {
-	return nil, 0, nil
+func (u *journalUsecase) GetAll(ctx context.Context, page, limit int) ([]JournalResponse, int64, error) {
+	journals, total, err := u.repo.FindAll(ctx, page, limit)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var result []JournalResponse
+
+	for _, j := range journals {
+		var details []JournalDetailResponse
+		for _, d := range j.Details {
+			acc, err := u.accountRepo.FindByID(ctx, d.AccountID)
+			if err != nil {
+				return nil, 0, err
+			}
+			details = append(details, ToJournalDetailResponse(d, account.ToAccountResponse(acc)))
+		}
+		result = append(result, *ToJournalResponse(&j, details))
+	}
+	return result, total, nil
 }
 
 func (j *journalUsecase) GetByID(ctx context.Context, id string) (*JournalResponse, error) {
-	return nil, nil
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		return nil, errors.New("invalid id")
+	}
+
+	journal, err := j.repo.FindByID(ctx, uid)
+	if err != nil {
+		return nil, err
+	}
+
+	var details []JournalDetailResponse
+	for _, d := range journal.Details {
+		acc, err := j.accountRepo.FindByID(ctx, d.AccountID)
+		if err != nil {
+			return nil, err
+		}
+		details = append(details, ToJournalDetailResponse(d, account.ToAccountResponse(acc)))
+	}
+
+	return ToJournalResponse(journal, details), nil
 }

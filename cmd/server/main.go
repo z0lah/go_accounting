@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go_accounting/config"
 	accountModule "go_accounting/internal/account"
+	journalModule "go_accounting/internal/journal"
 	tokenModule "go_accounting/internal/shared/token"
 	userModule "go_accounting/internal/user"
 	"log"
@@ -36,24 +37,32 @@ func main() {
 	}
 
 	// migrate
-	db.AutoMigrate(&userModule.User{}, &accountModule.Account{})
-
+	db.AutoMigrate(
+		&userModule.User{},
+		&accountModule.Account{},
+		&journalModule.Journal{},
+		&journalModule.JournalDetail{},
+	)
 	//init fiber app
 	app := fiber.New()
 
 	//init dependencies
 	userRepository := userModule.NewUserRepository(db)
 	accountRepository := accountModule.NewAccountRepository(db)
+	journalRepository := journalModule.NewJournalRepository(db)
 	tokenGen := tokenModule.NewJWTGenerator(cfg.SecretKey, 12*time.Hour)
 	userUsecase := userModule.NewUserUsecase(userRepository, tokenGen)
 	accountUsecase := accountModule.NewAccountUsecase(accountRepository)
+	journalUsecase := journalModule.NewJournalUsecase(journalRepository, accountRepository)
 
 	//group route
 	userGroup := app.Group("/users")
 	accountGroup := app.Group("/accounts")
+	journalGroup := app.Group("/journals")
 
 	userModule.NewUserHandler(userGroup, userUsecase)
 	accountModule.NewAccountHandler(accountGroup, accountUsecase)
+	journalModule.NewJournalHandler(journalGroup, journalUsecase)
 
 	//health check
 	app.Get("/health", func(c *fiber.Ctx) error {

@@ -15,7 +15,7 @@ type JournalDetailInput struct {
 }
 
 type CreateJournalInput struct {
-	Date        time.Time            `json:"date" validate:"required"`
+	Date        string               `json:"date" validate:"required"`
 	Reference   string               `json:"reference" validate:"required"`
 	Description string               `json:"description" validate:"required"`
 	Details     []JournalDetailInput `json:"details" validate:"required"`
