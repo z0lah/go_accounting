@@ -22,9 +22,18 @@ func (a *Account) BeforeCreate(tx *gorm.DB) (err error) {
 type AccountType string
 
 const (
-	Asset     AccountType = "asset"
-	Liability AccountType = "liability"
-	Equity    AccountType = "equity"
-	Revenue   AccountType = "revenue"
-	Expense   AccountType = "expense"
+	AccountTypeAsset     AccountType = "asset"
+	AccountTypeLiability AccountType = "liability"
+	AccountTypeEquity    AccountType = "equity"
+	AccountTypeRevenue   AccountType = "revenue"
+	AccountTypeExpense   AccountType = "expense"
 )
+
+func (t AccountType) IsCreditNormal() bool {
+	switch t {
+	case AccountTypeLiability, AccountTypeEquity, AccountTypeRevenue:
+		return true
+	default:
+		return false
+	}
+}
