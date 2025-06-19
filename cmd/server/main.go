@@ -6,6 +6,7 @@ import (
 	accountModule "go_accounting/internal/account"
 	journalModule "go_accounting/internal/journal"
 	ledgerModule "go_accounting/internal/ledger"
+	reportModule "go_accounting/internal/report"
 	tokenModule "go_accounting/internal/shared/token"
 	userModule "go_accounting/internal/user"
 	"log"
@@ -38,12 +39,18 @@ func main() {
 	}
 
 	// migrate
+	db = db.Debug()
 	db.AutoMigrate(
 		&userModule.User{},
 		&accountModule.Account{},
 		&journalModule.Journal{},
 		&journalModule.JournalDetail{},
 	)
+	// seed dummy data
+	// if err := seeder.SeedJournals(db); err != nil {
+	// 	log.Fatal("Gagal seed:", err)
+	// }
+
 	//init fiber app
 	app := fiber.New()
 
@@ -52,6 +59,7 @@ func main() {
 	accountRepository := accountModule.NewAccountRepository(db)
 	journalRepository := journalModule.NewJournalRepository(db)
 	ledgerRepository := ledgerModule.NewLedgerRepository(db)
+	reportRepository := reportModule.NewProfitLossRepository(db)
 
 	tokenGen := tokenModule.NewJWTGenerator(cfg.SecretKey, 12*time.Hour)
 
@@ -59,6 +67,7 @@ func main() {
 	accountUsecase := accountModule.NewAccountUsecase(accountRepository)
 	journalUsecase := journalModule.NewJournalUsecase(journalRepository, accountRepository)
 	ledgerUsecase := ledgerModule.NewLedgerUsecase(ledgerRepository, accountRepository)
+	reportUsecase := reportModule.NewProfitLossUsecase(reportRepository)
 
 	//group route
 	userGroup := app.Group("/users")
@@ -70,6 +79,7 @@ func main() {
 	accountModule.NewAccountHandler(accountGroup, accountUsecase)
 	journalModule.NewJournalHandler(journalGroup, journalUsecase)
 	ledgerModule.NewLedgerHandler(ledgerGroup, ledgerUsecase)
+	reportModule.NewProfitLossHandler(app.Group("/reports"), reportUsecase)
 
 	//health check
 	app.Get("/health", func(c *fiber.Ctx) error {
