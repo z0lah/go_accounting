@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go_accounting/config"
 	accountModule "go_accounting/internal/account"
+	balancesheetModule "go_accounting/internal/balancesheet"
 	journalModule "go_accounting/internal/journal"
 	ledgerModule "go_accounting/internal/ledger"
 	reportModule "go_accounting/internal/report"
@@ -60,6 +61,7 @@ func main() {
 	journalRepository := journalModule.NewJournalRepository(db)
 	ledgerRepository := ledgerModule.NewLedgerRepository(db)
 	reportRepository := reportModule.NewProfitLossRepository(db)
+	balancesheetRepository := balancesheetModule.NewBalanceSheetRepository(db)
 
 	tokenGen := tokenModule.NewJWTGenerator(cfg.SecretKey, 12*time.Hour)
 
@@ -68,6 +70,7 @@ func main() {
 	journalUsecase := journalModule.NewJournalUsecase(journalRepository, accountRepository)
 	ledgerUsecase := ledgerModule.NewLedgerUsecase(ledgerRepository, accountRepository)
 	reportUsecase := reportModule.NewProfitLossUsecase(reportRepository)
+	balancesheetUsecase := balancesheetModule.NewBalanceSheetUsecase(balancesheetRepository)
 
 	//group route
 	userGroup := app.Group("/users")
@@ -80,6 +83,7 @@ func main() {
 	journalModule.NewJournalHandler(journalGroup, journalUsecase)
 	ledgerModule.NewLedgerHandler(ledgerGroup, ledgerUsecase)
 	reportModule.NewProfitLossHandler(app.Group("/reports"), reportUsecase)
+	balancesheetModule.NewBalanceSheetHandler(app.Group("/balance-sheet"), balancesheetUsecase)
 
 	//health check
 	app.Get("/health", func(c *fiber.Ctx) error {
