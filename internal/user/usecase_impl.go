@@ -52,6 +52,9 @@ func (u *userUsecase) Login(ctx context.Context, input LoginInput) (*AuthRespons
 		return nil, errors.New("invalid password")
 	}
 
+	if user.Status != "active" {
+		return nil, errors.New("user not active")
+	}
 	// generate token
 	tokenStr, err := u.tokens.Generate(user.ID.String(), user.Email, user.Role)
 	if err != nil {

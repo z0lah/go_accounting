@@ -8,8 +8,9 @@ import (
 	dashboardModule "go_accounting/internal/dashboard"
 	journalModule "go_accounting/internal/journal"
 	ledgerModule "go_accounting/internal/ledger"
+	"go_accounting/internal/middleware"
 	reportModule "go_accounting/internal/report"
-	tokenModule "go_accounting/internal/shared/token"
+	token "go_accounting/internal/shared/token"
 	userModule "go_accounting/internal/user"
 	"log"
 	"time"
@@ -56,6 +57,12 @@ func main() {
 	//init fiber app
 	app := fiber.New()
 
+	//init middleware
+	tokenGen := token.NewJWTGenerator(cfg.SecretKey, 12*time.Hour)
+
+	auth := middleware.JWTMiddleware(tokenGen)
+	authAdmin := middleware.JWTMiddleware(tokenGen, "admin")
+
 	//init dependencies
 	userRepository := userModule.NewUserRepository(db)
 	accountRepository := accountModule.NewAccountRepository(db)
@@ -64,8 +71,6 @@ func main() {
 	reportRepository := reportModule.NewProfitLossRepository(db)
 	balancesheetRepository := balancesheetModule.NewBalanceSheetRepository(db)
 	dashboardRepository := dashboardModule.NewDashboardRepository(db)
-
-	tokenGen := tokenModule.NewJWTGenerator(cfg.SecretKey, 12*time.Hour)
 
 	userUsecase := userModule.NewUserUsecase(userRepository, tokenGen)
 	accountUsecase := accountModule.NewAccountUsecase(accountRepository)
@@ -76,25 +81,25 @@ func main() {
 	dashboardUsecase := dashboardModule.NewDashboardUsecase(dashboardRepository)
 
 	//group route
-	userGroup := app.Group("/users")
-	accountGroup := app.Group("/accounts")
-	journalGroup := app.Group("/journals")
-	ledgerGroup := app.Group("/ledgers")
+	userGroup := app.Group("/auth")
+	userAdminGroup := app.Group("/users", authAdmin)
+	accountGroup := app.Group("/accounts", auth)
+	journalGroup := app.Group("/journals", auth)
+	ledgerGroup := app.Group("/ledgers", auth)
 
 	userModule.NewUserHandler(userGroup, userUsecase)
+	userModule.NewUserAdminHandler(userAdminGroup, userUsecase)
 	accountModule.NewAccountHandler(accountGroup, accountUsecase)
 	journalModule.NewJournalHandler(journalGroup, journalUsecase)
 	ledgerModule.NewLedgerHandler(ledgerGroup, ledgerUsecase)
-	reportModule.NewProfitLossHandler(app.Group("/reports"), reportUsecase)
-	balancesheetModule.NewBalanceSheetHandler(app.Group("/balance-sheet"), balancesheetUsecase)
-	dashboardModule.NewDashboardHandler(app.Group("/dashboard"), dashboardUsecase)
+	reportModule.NewProfitLossHandler(app.Group("/reports", auth), reportUsecase)
+	balancesheetModule.NewBalanceSheetHandler(app.Group("/balance-sheet", auth), balancesheetUsecase)
+	dashboardModule.NewDashboardHandler(app.Group("/dashboard", auth), dashboardUsecase)
 
 	//health check
 	app.Get("/health", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"status": "ok"})
 	})
-
-	// TODO: Setup routes, middleware, etc.
 
 	// Start server
 	log.Fatal(app.Listen(":" + cfg.Port))

@@ -14,8 +14,12 @@ type jwtTokenGenerator struct {
 	secretKey string
 	expiry    time.Duration
 }
+type TokenService interface {
+	TokenGenerator
+	TokenParser
+}
 
-func NewJWTGenerator(secretKey string, expiry time.Duration) TokenGenerator {
+func NewJWTGenerator(secretKey string, expiry time.Duration) TokenService {
 	return &jwtTokenGenerator{
 		secretKey: secretKey,
 		expiry:    expiry,

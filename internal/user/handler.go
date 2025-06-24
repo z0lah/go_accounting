@@ -19,6 +19,10 @@ func NewUserHandler(router fiber.Router, usecase UserUsecase) {
 
 	router.Post("/register", handler.Register)
 	router.Post("/login", handler.Login)
+}
+func NewUserAdminHandler(router fiber.Router, usecase UserUsecase) {
+	handler := &UserHandler{usecase: usecase}
+
 	router.Get("/", handler.GetAll)
 	router.Get("/not-active", handler.GetNotActive)
 	router.Patch("/:id/role", handler.UpdateRole)
