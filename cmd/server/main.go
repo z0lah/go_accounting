@@ -5,6 +5,7 @@ import (
 	"go_accounting/config"
 	accountModule "go_accounting/internal/account"
 	balancesheetModule "go_accounting/internal/balancesheet"
+	dashboardModule "go_accounting/internal/dashboard"
 	journalModule "go_accounting/internal/journal"
 	ledgerModule "go_accounting/internal/ledger"
 	reportModule "go_accounting/internal/report"
@@ -40,7 +41,7 @@ func main() {
 	}
 
 	// migrate
-	db = db.Debug()
+	// db = db.Debug()
 	db.AutoMigrate(
 		&userModule.User{},
 		&accountModule.Account{},
@@ -62,6 +63,7 @@ func main() {
 	ledgerRepository := ledgerModule.NewLedgerRepository(db)
 	reportRepository := reportModule.NewProfitLossRepository(db)
 	balancesheetRepository := balancesheetModule.NewBalanceSheetRepository(db)
+	dashboardRepository := dashboardModule.NewDashboardRepository(db)
 
 	tokenGen := tokenModule.NewJWTGenerator(cfg.SecretKey, 12*time.Hour)
 
@@ -71,6 +73,7 @@ func main() {
 	ledgerUsecase := ledgerModule.NewLedgerUsecase(ledgerRepository, accountRepository)
 	reportUsecase := reportModule.NewProfitLossUsecase(reportRepository)
 	balancesheetUsecase := balancesheetModule.NewBalanceSheetUsecase(balancesheetRepository)
+	dashboardUsecase := dashboardModule.NewDashboardUsecase(dashboardRepository)
 
 	//group route
 	userGroup := app.Group("/users")
@@ -84,6 +87,7 @@ func main() {
 	ledgerModule.NewLedgerHandler(ledgerGroup, ledgerUsecase)
 	reportModule.NewProfitLossHandler(app.Group("/reports"), reportUsecase)
 	balancesheetModule.NewBalanceSheetHandler(app.Group("/balance-sheet"), balancesheetUsecase)
+	dashboardModule.NewDashboardHandler(app.Group("/dashboard"), dashboardUsecase)
 
 	//health check
 	app.Get("/health", func(c *fiber.Ctx) error {
